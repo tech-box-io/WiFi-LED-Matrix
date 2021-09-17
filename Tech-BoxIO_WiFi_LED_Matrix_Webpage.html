@@ -1,0 +1,356 @@
+<html lang="en"> 
+<head> 
+	<!-- Set the HTML character set and web page title -->
+	<meta charset="utf-8"> 
+	<title>TechBox NeoPixel Matrix</title> 
+</head> 
+
+<style> 
+	/* Set the Base Style */
+	.TechBox { 
+    	background-color: #f1f1f1; 
+        color: #161616; 
+        border: 4px solid #00b0f0; 
+        margin: 1%; 
+        padding: 1%; 
+        font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, "sans-serif"; 
+        letter-spacing: 1px; 
+        font-size:120%;
+  	} 
+    
+	/* Initialize requirement variables */ 
+  	.req02 { 
+    	required: false; 
+  	} 
+    .req05 { 
+    	required: false; 
+  	}     
+    .req16 { 
+		required: false;
+    } 
+    
+	/* Set style for the submit button */
+    .submit { 
+    	width:180px;
+    	height:50px; 
+        font-size:25px; 
+        background: #00b0f0; 
+        color: #fff; 
+        border: 4px solid #363636; 
+        -webkit-appearance: none; 
+  	}
+        
+	/* Alter the submit button style if being hovered */
+    .submit:hover { 
+    	background:#00bfff; 
+  	} 
+    
+	/* Set style for Custom Message Box */
+    .box02{ 
+    	color: #fff; 
+        padding: 5px;
+        border: 4px solid #363636; 
+        display: none; 
+        margin-top: 5px;
+  	} 
+    
+	/* Set style for Sprite Box */
+    .box05{ 
+    	color: #fff; 
+        padding: 5px; 
+        border: 4px solid #363636; 
+        display: none;
+        margin-top: 5px; 
+  	} 
+    
+	/* Set style for RGB Box */
+    .box16{ 
+    	color: #fff; 
+        padding: 5px; 
+        border: 4px solid #363636; 
+        display: none; 
+        margin-top: 5px; 
+  	} 
+    
+	/* Set background colors for togglable boxes */
+    .t02{ background: #00b0f0; } 
+    .t05{ background: #00b0f0; } 
+    .t16{ background: #00b0f0; } 
+    
+    /* The Container */
+    .container { 
+    	display: block; 
+        position:relative; 
+        display:inline-block; 
+        float:left; 
+        cursor: pointer; 
+        font-size: 100%; 
+        -webkit-user-select: none; 
+        -moz-user-select: none; 
+        -ms-user-select: none; 
+        user-select: none; 
+  	} 
+    
+    /* Hide the browser's default radio button */
+    .container input { 
+    	position: absolute; 
+        opacity: 0; 
+        cursor: pointer; 
+  	} 
+     
+  	/* Create a custom radio button */
+    .checkmark { 
+    	position: absolute; 
+        top: 0px; 
+        left: -40px; 
+        height: 24px; 
+        width: 24px;
+        background-color: #969696; 
+        border-radius: 50%; 
+  	} 
+    
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark { 
+    	background-color: #767676; 
+  	} 
+   
+   	/* When the radio button is checked, add a blue background */
+    .container input:checked ~ .checkmark { 
+    	background-color: #00b0f0; 
+  	} 
+    
+	/* Create the indicatior (the dot/circle - hidden when not checked) */
+	.checkmark:after { 
+    	content: ""; 
+    	position: absolute; 
+        display: none; 
+  	}
+    
+    /* Show the indicator (dot/circle) when checked */
+    .container input:checked ~ .checkmark:after { 
+    	display: block; 
+  	} 
+    
+    /* Style the indicator (dot/circle) */
+    .container .checkmark:after { 
+    	top: 8px; 
+        left: 8px; 
+        width: 8px; 
+        height: 8px; 
+        border-radius: 50%; 
+        background: white; 
+  	} 
+</style> 
+  
+<body  style="background-color:#262626;">
+	<!-- Build the webpage with HTML -->
+	<div class="TechBox"> 
+		
+		<center>
+			<!-- The below img value is an encoded svg/xml image for the Tech-Box Logo, you can customize it to your own logo if desired! --> 
+			<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NDkuOTEgMTE3LjA4Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzAwYjBmMDt9PC9zdHlsZT48L2RlZnM+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cGF0aCBkPSJNNjIuNDUsMjEuMzVWMzcuODZINjkuNnY5LjU1TDQ0LjgsNjguMTZWMTIuNzFsOC41Myw4LjZMNTgsMTYuNjVsLTExLjg5LTEyTDQxLjQ0LDAsMzYuODIsNC42NmwtMTEuODksMTIsNC42Miw0LjY2TDM4LDEyLjg0Vjc4LjQ1TDEzLjA1LDU4Ljg4VjQ4LjM3QTkuNzEsOS43MSwwLDAsMCw5LjYyLDI5LjYxLDkuNzEsOS43MSwwLDAsMCw2LjE4LDQ4LjM3VjYxLjg4aC4wNkwzOCw4Ni43OXY0Ljc4YTEyLjg5LDEyLjg5LDAsMSwwLDYuODUsMFY3Ni43MUw3Ni41OSw1MC4xMmwtLjEtLjEyaC4xVjM3Ljg2aDcuMTZWMjEuMzVaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTU2LjYyLDEyLjEzVjMxLjkxSDE0MS4zNnY3OUgxMTUuNjd2LTc5aC0xNS4yVjEyLjEzWiIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE2Mi40OCwxMi4xM2g0Mi44NVYzMS45MUgxODguMThWNTAuNjVoMTZ2MTguOGgtMTZWOTEuMTdIMjA3VjExMUgxNjIuNDhaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjc0LjQyLDU1LjE2SDI0OC43M1YzOHEwLTcuNDktLjgzLTkuMzV0LTMuNjMtMS44NmMtMi4xMiwwLTMuNDYuNzYtNCwyLjI2cy0uODUsNC43Ni0uODUsOS43N3Y0NS45cTAsNy4yLjg1LDkuMzl0My44NSwyLjJjMS45MSwwLDMuMTYtLjczLDMuNzUtMi4ycy44OS00LjkyLjg5LTEwLjM0VjcxLjM0aDI1LjY5djMuODVxMCwxNS4zNS0yLjE2LDIxLjc2dC05LjU5LDExLjI1UTI1NS4yNiwxMTMsMjQ0LjM5LDExM3EtMTEuMjksMC0xOC42MS00LjA5YTE5Ljg4LDE5Ljg4LDAsMCwxLTkuNzEtMTEuMzNxLTIuMzgtNy4yMy0yLjM4LTIxLjc1VjQ3YTEzMC4yOCwxMzAuMjgsMCwwLDEsLjczLTE2LDIyLjQ3LDIyLjQ3LDAsMCwxLDQuMzctMTAuMjgsMjQuMjksMjQuMjksMCwwLDEsMTAuMDctNy43OCwzNi4yMiwzNi4yMiwwLDAsMSwxNC44LTIuODRxMTEuMzUsMCwxOC43NCw0LjM5dDkuNywxMC45NHEyLjMyLDYuNTYsMi4zMiwyMC4zOVoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zNDIuNzIsMTIuMTNWMTExSDMxN1Y2OS40NWgtNy42OVYxMTFIMjgzLjY0VjEyLjEzaDI1LjY5VjQ3LjQ3SDMxN1YxMi4xM1oiLz48cGF0aCBkPSJNMzU1LjkxLDEyLjEzaDI1LjYzcTEyLjE1LDAsMTguNCwxLjlhMTguMjksMTguMjksMCwwLDEsMTAuMTEsNy42NXEzLjg0LDUuNzYsMy44NCwxOC41NywwLDguNjctMi43MSwxMi4wOHQtMTAuNzIsNS4yNXE4LjkxLDIsMTIuMDksNi42OHQzLjE3LDE0LjMydjkuMTZxMCwxMC0yLjI5LDE0Ljg0YTEyLjMzLDEyLjMzLDAsMCwxLTcuMjksNi42cS01LDEuNzctMjAuNTEsMS43N0gzNTUuOTFaTTM4MS42LDI5VjUxYzEuMSwwLDItLjA2LDIuNTctLjA2UTM4OCw1MSwzODksNDkuMDl0MS0xMC42NXEwLTQuNjMtLjg2LTYuNWE0LjEsNC4xLDAsMCwwLTIuMjMtMi4zNUExOS45NCwxOS45NCwwLDAsMCwzODEuNiwyOVptMCwzNy4zNVY5NHE1LjQzLS4xOCw2LjkzLTEuNzF0MS41LTcuNVY3NS42MXEwLTYuMzUtMS4zNS03LjY5VDM4MS42LDY2LjM5WiIvPjxwYXRoIGQ9Ik00ODMuNjUsNzBxMCwxNC44OC0uNywyMS4wOGEyMy41OCwyMy41OCwwLDAsMS0xNC4zNywxOS4yQTM2LjM2LDM2LjM2LDAsMCwxLDQ1My45MywxMTNhMzcuMTksMzcuMTksMCwwLDEtMTQuMjUtMi42LDIzLjc2LDIzLjc2LDAsMCwxLTE0Ljc0LTE5LjA3QTIwOC4zMywyMDguMzMsMCwwLDEsNDI0LjIxLDcwVjUzLjA5cTAtMTQuOS43LTIxLjA5YTIzLjU5LDIzLjU5LDAsMCwxLDE0LjM3LTE5LjE5LDM2LjE2LDM2LjE2LDAsMCwxLDE0LjY1LTIuNzUsMzcuMTksMzcuMTksMCwwLDEsMTQuMjUsMi41OSwyMy43OSwyMy43OSwwLDAsMSwxNC43NCwxOS4wOCwyMDguMzMsMjA4LjMzLDAsMCwxLC43MywyMS4zNlpNNDU4LDM3LjUzcTAtNi45LS43Ny04LjgyYTMsMywwLDAsMC0zLjE0LTEuOTNBMy41LDMuNSwwLDAsMCw0NTEsMjguMzRxLTEuMDcsMS41Ni0xLjA3LDkuMTlWODMuNjdjMCw1Ljc0LjI0LDkuMjguNywxMC42MmEzLjA3LDMuMDcsMCwwLDAsMy4yNywyQTMuMTQsMy4xNCwwLDAsMCw0NTcuMjIsOTRjLjQ5LTEuNTQuNzQtNS4yMy43NC0xMVoiLz48cGF0aCBkPSJNNTQ1LjMzLDEyLjEzbC05LDQzLjcxTDU0OS45MSwxMTFINTI2LjFhMzI1LjgxLDMyNS44MSwwLDAsMS03LjgxLTM2cS0xLDkuNDEtMi43MSwxOS45TDUxMy4xNiwxMTFoLTI1bDkuMzQtNTUuMTEtOS4zNC00My43MUg1MTNxLjY3LDQuMDksMi42OCwxMy42MSwxLjYxLDcuMjYsMi42MywxMy4zN2w1LjQ5LTI3WiIvPjwvZz48L2c+PC9zdmc+" alt="Tech-Box.io Logo" style="padding-top: 25px; max-width: 450px;"> 
+			
+			<!-- Set the header of the webpage -->
+			<h1>RGB NeoPixel Matrix</h1> 
+			
+			<!-- Set the style and text for the descriptions and instructions at the top of the webpage -->
+			<p style="margin: 5px; margin-bottom: 20px;">This sketch lets the user select the LED mode for the 8x8 pixel WS2812b display.</p> 
+			
+			<p style="margin: 5px; margin-bottom: 20px;">Please select one of the options below and click "Update" to update the screen:</p> 
+			
+			<!-- Set the menu optiosn to display as an inline-block -->
+			<div style="display: inline-block;">
+				<!-- Create a form with an action attribute -->
+				<form action="/set"> 
+					<!-- Create the containers, inputs, and values for all of the menu options from the WiFi LED Matrix Arduino Code -->
+					<label class="container">Demo 
+						<input type="radio" checked name="Group1" value="O1"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Custom Message 
+						<input type="radio" name="Group1" value="t02"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Twinkle 
+						<input type="radio" name="Group1" value="O3"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Snake 
+						<input type="radio" name="Group1" value="O4"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Sprites 
+						<input type="radio" name="Group1" value="t05"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Fire! 
+						<input type="radio" name="Group1" value="O6"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Stripes 
+						<input type="radio" name="Group1" value="O7"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Juggle 
+						<input type="radio" name="Group1" value="O8"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Confetti 
+						<input type="radio" name="Group1" value="O9"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Scanning 
+						<input type="radio" name="Group1" value="10"> 
+						<span class="checkmark"></span> 
+					</label><br><br>   
+					<label class="container">Beats per Minute (BPM) 
+						<input type="radio" name="Group1" value="11"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">BPM with Glitter 
+						<input type="radio" name="Group1" value="12"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Theater Chasing 
+						<input type="radio" name="Group1" value="13"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Rainbow 
+						<input type="radio" name="Group1" value="14"> 
+						<span class="checkmark"></span> 
+					</label><br><br>
+					<label class="container">Color Wipe 
+						<input type="radio" name="Group1" value="15"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Constant Color 
+						<input type="radio" name="Group1" value="t16"> 
+						<span class="checkmark"></span> 
+					</label><br><br> 
+					<label class="container">Off 
+						<input type="radio" name="Group1" value="17"> 
+						<span class="checkmark"></span> 
+					</label><br><br>    
+					<!-- Create the togglable input box for the custom message selection. If custom message is selected (but not submitted) this box will appear for user input. -->
+					<div class="t02 box02">
+						<p> 
+							<strong>*All Fields Required*</strong> 
+							<br><br> 
+							<label> Message:<br> 
+							<input type="text" name="customMessage" value="" style="width:200px" class="req02" maxlength="50"> </label> 
+							<br><br> 
+							Max message length - 50 characters 
+						</p> 
+					</div> 
+					<!-- Create the togglable input box for the Sprite image selection. If Sprites is selected (but not submitted) this box will appear for user input. -->
+					<div class="t05 box05"> 
+						<p> 
+							<strong>*All Fields Required*</strong> 
+							<br><br> 
+							0 - Rotate All<br> 
+							1 - Heart<br> 
+							2 - Pac-Man Pink Ghost<br> 
+							3 - Pac-Man Purple Ghost<br> 
+							4 - Pac-Man Green Ghost<br> 
+							5 - Pac-Man Blue Ghost<br> 
+							6 - Pac-Man<br> 
+							7 - Charged Creeper<br> 
+							8 - Mario<br> 
+							9 - Mario Shy Guy<br> 
+							10 - Kirby<br> 
+							11 - Adventure Time Finn<br> 
+							12 - Creeper<br>
+							13 - Yoshi<br> 
+							14 - Blue Potion<br> 
+							15 - Green Potion<br> 
+							16 - Orange Potion<br> 
+							17 - Red Potion<br> 
+							18 - Pikachu<br><br> 
+							<label> Sprite Selection:<br> 
+							<input type="number" name="spriteSelect" value="" style="width:120px" class="req05" max="18" min="0" step="1"> </label> 
+							<br><br> 
+						</p> 
+					</div> 
+					<!-- Create the togglable box for the Constant Color Selection. If Constant Color is selected (but not submitted) this box will appear for user input. -->
+					<div class="t16 box16">  
+						<p> 
+							<strong>*All Fields Required*</strong> 
+							<br><br> 
+							<label> R: 
+								<input type="number" name="R" value="" style="width:40px" class="req16" max="255" min="0" step="1"> 
+							</label> 
+							&nbsp 
+							<label> G: 
+								<input type="number" name="G" value="" style="width:40px" class="req16" max="255" min="0" step="1"> 
+							</label> 
+							&nbsp 
+							<label> B: 
+								<input type="number" name="B" value="" style="width:40px" class="req16" max="255" min="0" step="1"> 
+							</label> 
+							<br><br> 
+							Enter values between 0 and 255 
+						</p> 
+					</div> 
+					<br> 
+					<!-- Create the submit button at the bottom of the form -->
+					<input class="submit" type="submit" value="Update">
+				</form> 
+			</div> 
+			
+			<!-- Display the RSSI (Recieved Signal Strength Indication - which shows the WiFi Strength of the Tech-Box.io WiFi LED Matrix) and the uptime of the device -->
+			<p style="font-size: 90%; color: #000;"> 
+				RSSI: [RSSI Prints Here] <br/>
+				Uptime [min]: [Uptime Prints Here] 
+			</p> 
+			
+			<!-- Display the Webpage revision number, the email link for support questions and link to the project files and instruction guide -->
+			<p style="font-size: 80%; color: #08088A;"> 
+				TechBox RGB NeoPixel Matrix v11.05 |  
+				<a href="mailto:support@tech-box.io">Email Us!</a> | 
+				<a href="https://tech-box.io/blogs/guides/wifi-led-matrix-instruction-guide" target="_blank">Project Files</a> 
+			</p> 
+		</center> 
+	</div>
+
+	<!-- Note: The network must have a valid internet connection for this script to run. If the network is not connected to the internet, the script will not run, and conditional display boxes will NOT display -->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script> 
+	
+	<script> 
+		$(document).ready(function(){ 
+			$('input[type="radio"]').click(function(){ 
+				//Get the selected input value from the form
+				var inputValue = $(this).attr("value"); 
+				//Create the target box variable by adding a "." to the input value
+				var targetBox = $("." + inputValue);
+				//Check the targetBox value to display or hide the appropriate conditional boxes that were created above in the HTML section
+				if(targetBox.not(".box02")){
+					$(".req02").prop("required", false); 
+					$(".box02").not(targetBox).hide(); 
+				} 
+				if(targetBox.not(".box05")){ 
+					$(".req05").prop("required", false); 
+					$(".box05").not(targetBox).hide();  
+				} 
+				if(targetBox.not(".box16")){ 
+					$(".req16").prop("required", false); 
+					$(".box16").not(targetBox).hide(); 
+				} 
+				if(targetBox.is(".box02")){ 
+					$(".req02").prop("required", true); 
+					$(".box02").show(); 
+				} 
+				if(targetBox.is(".box05")){ 
+					$(".req05").prop("required", true); 
+					$(".box05").show(); 
+				} 
+				if(targetBox.is(".box16")){ 
+					$(".req16").prop("required", true); 
+					$(".box16").show(); 
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>
+
