@@ -115,8 +115,10 @@ int pass = 0;
 
 
 // Set your wifi credetials here, for open wifi leave password empty
+// Note: This kit will not work with 5GHz WiFi, please select the 2GHz network if your WiFi has multiple operating frequencies
 //const char* ssid = "";
 //const char* password = "";
+
 
 WiFiClient        espClient;    //Define the WiFi Client
 MDNSResponder     mdns;         //Define the MDNS Responder
@@ -127,6 +129,22 @@ ESP8266WebServer  server(80);   //Define the ESP8266 Web Server
 void setup() {  
   Serial.begin(115200);
 
+  //Add LEDs for the FastLED library to use
+  FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+
+  //Set master brightness control
+  FastLED.setBrightness(BRIGHTNESS);
+  randomSeed(analogRead(A0));
+  generateLine();
+  
+  //Start the FastLED_NeoMatrix Matrices
+  strip->begin();
+  matrix->begin();
+  matrix->setTextWrap(false);
+  matrix->setBrightness(40);
+  matrix->setTextColor(colors[0]);
+
+  
   // You can comment this section out for using DHCP
   //IPAddress ip(192, 168, 1, XX); // where xx is the desired IP Address
   //IPAddress gateway(192, 168, 1, 254); // set gateway to match your network
@@ -137,10 +155,9 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  //While not connected, print "." via Serial 
+  //While not connected, print "." via Serial and show connection error message
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+    failMessage();
   }
 
   //Print the connection information and signal strength via serial once connected
@@ -162,21 +179,6 @@ void setup() {
   server.on("/set", handleSetCommand);        // Handling parameter set
   server.begin();
   Serial.println("HTTP server started");
-
-  //Add LEDs for the FastLED library to use
-  FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-
-  //Set master brightness control
-  FastLED.setBrightness(BRIGHTNESS);
-  randomSeed(analogRead(A0));
-  generateLine();
-  
-  //Start the FastLED_NeoMatrix Matrices
-  strip->begin();
-  matrix->begin();
-  matrix->setTextWrap(false);
-  matrix->setBrightness(40);
-  matrix->setTextColor(colors[0]);
 
   //Must wait for the initial message display to complete to customize the LED Matrix
   while(messageComplete == false) {
@@ -485,6 +487,34 @@ void off() {
 
 
 
+//Send a Failure Message via the LEDs
+////////////////////////////////////////////////////////////////////////////////////////////////
+//Create initial message to show that WiFi connection failed or SSID/Password Incorrect
+void failMessage() {
+  temp = "Tech-Box.io - WiFi Connection Failed - Check WiFi SSID and Password";
+  failmsg(temp);
+}
+
+//Print the initial message to the LED Matrix, wait 100ms between refreshes
+void failmsg(String text) {
+  matrix->fillScreen(0);    //Clear the LED Matrix
+  matrix->setCursor(x, 0);  //Set the LED Cursor location
+  matrix->print(text);      //Print the text
+  textLength = text.length() * -7;  //Find the text length and offset it for smooth wraparound
+  if(--x < textLength) {    
+    x = matrix->width();
+    if(++pass >= 3) pass = 0;
+    matrix->setTextColor(colors[pass]);   //Rotate colors through Red, Green and Blue on each pass
+  }
+  matrix->show();   //Display to the matrix
+  Serial.print(".");
+  delay(100);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 //Send a Message via the LEDs
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //Create initial message to show what IP Address on the same WiFi network to go to for customization
@@ -520,16 +550,15 @@ void message(String text) {
 //Create a custom message string that can be printed to the LED Matrix
 void selectMessage() {
   String mess = customMessage;
-  selectMessage(mess);
+  selectMsg(mess);
 }
 
 //Print the custom message to the LED Matrix
-void selectMessage(String text) {
+void selectMsg(String text) {
   matrix->fillScreen(0);    //Clear the LED Matrix
   matrix->setCursor(x, 0);  //Set the LED Cursor location
   matrix->print(text);      //Print the text
   textLength = text.length() * -7;    //Find the text length and offset it for smooth wraparound
-  //Serial.println(textLength);
   if(--x < textLength) {
     x = matrix->width();
     if(++pass >= 3) pass = 0;
