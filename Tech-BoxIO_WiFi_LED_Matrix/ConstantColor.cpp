@@ -1,5 +1,5 @@
 //Start by including the required header for this file
-#include "Effect.h"
+#include "src/Effect.h"
 
 //Create the Constant Color class
 class ConstantColor : public Effect {

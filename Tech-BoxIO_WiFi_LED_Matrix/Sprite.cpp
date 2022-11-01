@@ -1,5 +1,5 @@
 //Start by including the required header for this file
-#include "Effect.h"
+#include "src/Effect.h"
 
 //Define the following variables
 #define SPRITE_WIDTH 8        //Sprite Width which is equal to LED Matrix width

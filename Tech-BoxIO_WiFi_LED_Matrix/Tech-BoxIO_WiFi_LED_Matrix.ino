@@ -4,15 +4,15 @@
 #include <ESP8266WebServer.h>       // Web server functions
 #include <ESP8266mDNS.h>            // Web server functions
 #include <SPI.h>                    // SPI Communication Library
-#include <FastLED.h>                
+#include "src/FastLED.h"                
 
 //ADA
-#include <Adafruit_GFX.h>
-#include <Adafruit_NeoPixel.h>
-#include <Adafruit_I2CDevice.h>
+#include "src/Adafruit_GFX.h"
+#include "src/Adafruit_NeoPixel.h"
+#include "src/Adafruit_I2CDevice.h"
 //END ADA
 
-#include <FastLED_NeoMatrix.h>
+#include "src/FastLED_NeoMatrix.h"
 
 //Include the additional C++ files for the separate pattern routines
 #include "Twinkle.cpp"
@@ -116,8 +116,8 @@ int pass = 0;
 
 // Set your wifi credetials here, for open wifi leave password empty
 // Note: This kit will not work with 5GHz WiFi, please select the 2GHz network if your WiFi has multiple operating frequencies
-//const char* ssid = "";
-//const char* password = "";
+const char* ssid = "MySpectrumWiFi49-2G";
+const char* password = "johnsonl0920";
 
 
 WiFiClient        espClient;    //Define the WiFi Client

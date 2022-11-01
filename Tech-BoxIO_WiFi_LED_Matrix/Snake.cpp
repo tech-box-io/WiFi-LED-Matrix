@@ -1,5 +1,5 @@
 //Start by including the required header for this file
-#include "Effect.h"
+#include "src/Effect.h"
 
 //Create the Snake object
 class Snake : public Effect {
