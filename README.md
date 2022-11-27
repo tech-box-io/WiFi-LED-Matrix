@@ -1,4 +1,4 @@
-Tech-Box.io Laser Stem Matrix
+Tech-Box.io WiFi LED Matrix
 ===========
 
 This repository contains all of the files and libraries required to program and control the 
