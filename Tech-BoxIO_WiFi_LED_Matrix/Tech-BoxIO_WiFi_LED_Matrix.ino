@@ -116,8 +116,8 @@ int pass = 0;
 
 // Set your wifi credetials here, for open wifi leave password empty
 // Note: This kit will not work with 5GHz WiFi, please select the 2GHz network if your WiFi has multiple operating frequencies
-const char* ssid = "MySpectrumWiFi49-2G";
-const char* password = "johnsonl0920";
+//const char* ssid = "";
+//const char* password = "";
 
 
 WiFiClient        espClient;    //Define the WiFi Client
