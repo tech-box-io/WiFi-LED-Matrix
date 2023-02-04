@@ -156,10 +156,15 @@ void setup() {
   WiFi.begin(ssid, password);
 
   //While not connected, print "." via Serial and show connection error message
-  while (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED) {
     failMessage();
   }
-
+  else{
+    while(WiFi.status() != WL_CONNECTED){
+      demo();
+    }
+  }
+  
   //Print the connection information and signal strength via serial once connected
   Serial.println("");
   Serial.print("Connected to ");
@@ -519,10 +524,16 @@ void failmsg(String text) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //Create initial message to show what IP Address on the same WiFi network to go to for customization
 void doMessage() {
-  temp = "Tech-Box.io - Visit http://";
-  temp += WiFi.localIP().toString();
-  temp +=" to customize";
-  message(temp);
+  if(WiFi.status() != WL_CONNECTED){
+    temp = "Tech-Box.io - WiFi Connection Failed - Check WiFi SSID and Password";
+    message(temp);
+  }
+  else {
+    temp = "Tech-Box.io - Visit http://";
+    temp += WiFi.localIP().toString();
+    temp +=" to customize";
+    message(temp);
+  }
 }
 
 //Print the initial message to the LED Matrix, wait 100ms between refreshes
